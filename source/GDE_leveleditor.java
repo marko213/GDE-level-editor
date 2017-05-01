@@ -340,10 +340,6 @@ public void draw() {
   
   background(100, 230, 100);
   
-  if(restartTime == 0 && !paused) {
-    iterate();
-  }
-
   if(!paused) {
     camX = max(playerX - width / 2, 0);
     camY = max(playerY - (height - floorLevel), 0);
@@ -351,6 +347,10 @@ public void draw() {
     drawIndex = 0;
     camX = max(camX + (shiftDown? camXVel / 2 : camXVel), 0);
     camY = max(camY + (shiftDown? camYVel / 2 : camYVel), 0);
+  }
+  
+  if(restartTime == 0 && !paused) {
+    iterate();
   }
   
   pushMatrix();
