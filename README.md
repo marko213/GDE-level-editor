@@ -4,7 +4,7 @@
 
 <br></br>
 
-The GDE level editor is intended for level creation to GDE. To get the modified level to appear in GDE, follow these steps:
+The GDE level editor is intended for level creation to <a href="https://github.com/marko213/GDE">GDE</a>. To get the modified level to appear in GDE, follow these steps:
 
 1 Create and save your level (see INSTRUCTIONS.md).
 
