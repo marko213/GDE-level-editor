@@ -34,7 +34,7 @@ int playerY;               // Current position of the player (Y axis)
 int playerVelX;            // Velocity of player (X axis) (pixels/(1/60-th of a second))
 float playerVelY;          // Velocity of player (Y axis) (pixels/(1/60-th of a second))
 boolean paused = false;    // Is the game currently paused (in edit mode)? 
-int endX = 1000;           // X position that needs to be reached to win
+int endX = 300;           // X position that needs to be reached to win
 
 int camX = 0;              // Position of the camera (X axis)
 int camY = 0;              // Position of the camera (Y axis)
@@ -230,12 +230,12 @@ public void setup(){
 
 public void initRun () {
   drawIndex = 0;
-  playerX = 40;
+  playerX = playerSize / 2;
   playerY = 0;
   playerVelY = 0f;
   playerVelX = 5;
-  camX = 0;
-  camY = 0;
+  camX = playerX - sizeX / 2;
+  camY = max (playerY - (height - floorLevel), 0);
   gravity = abs(gravity);
   restartTime = 0;
 }
@@ -252,7 +252,7 @@ public void draw() {
   background(100, 230, 100);
   
   if(!paused) {
-    camX = max(playerX - width / 2, 0);
+    camX = playerX - width / 2;
     camY = max(playerY - (height - floorLevel), 0);
   } else {
     drawIndex = 0;
@@ -286,9 +286,20 @@ public void draw() {
     }
   }
   
-  noStroke();
-  fill(70, 70, 60);
-  rect(camX, floorLevel, width, height - floorLevel);
+  noStroke ();
+  fill (70, 200 , 70);
+  rect (-sizeX / 2, 0, sizeX / 2, floorLevel);
+  
+  fill (200, 10, 10);
+  rect (endX + playerSize / 2, 0, sizeX / 2, floorLevel);
+  
+  fill (70);
+  rect (camX, floorLevel, sizeX, height - floorLevel);
+  
+  stroke (55);
+  strokeWeight (4);
+  noSmooth ();
+  line (camX, floorLevel + 2, camX + sizeX, floorLevel + 2);
   
   if(paused) {
     int x = mouseX + camX;
@@ -348,6 +359,8 @@ public void placeObject () {
   for (int i = 0; i < obstacles.size (); i++) {
     if (obstacles.get (i).x > tempObstacle.x) {
       obstacles.add (i, tempObstacle);
+      if (tempObstacle.x > endX - 300)
+        endX = tempObstacle.x + 300;
       break;
     }
   }
@@ -359,19 +372,21 @@ public void placeObject () {
 }
 
 public void removeBehind () {
-  removeFromPos(mouseX + camX, floorLevel - mouseY + camY);
+  removeFromPos (mouseX + camX, floorLevel - mouseY + camY);
 }
 
-public void removeFromPos(int x, int y) {
+public void removeFromPos (int x, int y) {
   
-  for (int i = obstacles.size() - 1; i >= 0; i--) {
+  for (int i = obstacles.size () - 1; i >= 0; i--) {
       
-      Obstacle o = obstacles.get(i);
+      Obstacle o = obstacles.get (i);
       
       if (pointInBoxIn(x, y, o.x - obstacleSize / 2, o.y, o.x + obstacleSize / 2, o.y + obstacleSize)) {
         obstacles.remove(i);
       }
       
+      if (obstacles.size () > 0)
+        endX = obstacles.get (obstacles.size () - 1).x + 300;
   }
   
 }
@@ -624,6 +639,9 @@ public void loadLevel() {
     for (int i = 0; i < table.getRowCount(); i++) {
       TableRow row = table.getRow(i);
       obstacles.add(new Obstacle(row.getInt("x"), row.getInt("y"), row.getInt("triangle") == 1, row.getInt("flipped") == 1));
+      
+      if (obstacles.get (i).x > endX - 300);
+        endX = obstacles.get (i).x + 300;
     }
     initRun ();
   }
